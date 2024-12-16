@@ -50,10 +50,13 @@ def serialize_animal(animal):
     return output
 
 
-def generate_info_string(animals_data):
+def generate_info_string(animals_data, animal_name):
     """
     Generate an HTML string for a list of animals by serializing each one.
     """
+    if not animals_data:  # If no data is returned from the API
+        return f"<h2>The animal '{animal_name}' doesn't exist.</h2>"
+
     output = ""
     for animal_obj in animals_data:
         output += serialize_animal(animal_obj)
@@ -82,28 +85,30 @@ def main():
     Orchestrates the process of fetching animal data,
     generating HTML content, and saving it to a file.
     """
-    # Prompts and gets animal name from user
-    animal_name = get_animal_from_user()
-
-    #API config
+    # Fetch API key and setup API request
+    api_key = "sGX5MTpcQPbtL6DknWFjPg==L22HMyYSGBkwcO4n"  # Hardcoded for this exercise
     api_url = "https://api.api-ninjas.com/v1/animals?name={}"
-    headers = {"X-Api-Key": "sGX5MTpcQPbtL6DknWFjPg==L22HMyYSGBkwcO4n"}
+    headers = {"X-Api-Key": api_key}
 
-    # Fetch animal data from the API
-    animals_data = fetch_animal_data(api_url, headers, animal_name)
-    animals_data = animals_data[:10]  # Limit to 10 animals
+    while True:  # Loop until valid data is received
+        animal_name = get_animal_from_user() # Prompts and gets animal name from user
 
-    # Ensure data is fetched successfully
-    if animals_data is None:
-        print(f"Error: Failed to fetch data for '{animal_name}'. Status code: {response.status_code}")
-        return
+        # Fetch animal data from the API
+        animals_data = (fetch_animal_data(api_url, headers, animal_name))[:10]
 
-    if not animals_data:
-        print(f"No data found for '{animal_name}'. Please try again.")
-        return main()  # Restart the main process
+        # Ensure data is fetched successfully
+        if animals_data is None:
+            print(f"Error: Failed to fetch data for '{animal_name}'. Status code: {response.status_code}")
+            continue
+
+        if not animals_data:
+            print(f"No data found for '{animal_name}'. Please try again.")
+            continue
+
+        break # Data found, exits loop
 
     # Generate the string for animals info
-    animals_string = generate_info_string(animals_data)
+    animals_string = generate_info_string(animals_data, animal_name)
 
     # Read the HTML template
     template = read_animals_template("animals_template.html")
