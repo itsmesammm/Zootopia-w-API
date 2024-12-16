@@ -69,10 +69,6 @@ def main():
     Orchestrates the process of fetching animal data,
     generating HTML content, and saving it to a file.
     """
-    # Fetch API key and setup API request
-    api_key = "sGX5MTpcQPbtL6DknWFjPg==L22HMyYSGBkwcO4n"  # Hardcoded for this exercise
-    api_url = "https://api.api-ninjas.com/v1/animals?name={}"
-    headers = {"X-Api-Key": api_key}
 
     while True:  # Loop until valid data is received
         animal_name = get_animal_from_user() # Prompts and gets animal name from user
@@ -82,14 +78,14 @@ def main():
 
         # Ensure data is fetched successfully
         if animals_data is None:
-            print(f"Error: Failed to fetch data for '{animal_name}'. Status code: {response.status_code}")
+            print(f"Error: Failed to fetch data for '{animal_name}'. Please try again.")
             continue
 
         if not animals_data:
             print(f"No data found for '{animal_name}'. Please try again.")
             continue
 
-        break # Data found, exits loop
+        break # Data found, exit loop
 
     # Generate the string for animals info
     animals_string = generate_info_string(animals_data, animal_name)
