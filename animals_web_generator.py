@@ -1,18 +1,21 @@
+import requests
 import json
 
 
-def load_data(file_path):
+def fetch_animal_data(api_url, headers, animal_name):
+    """
+        Fetch animal data from the API.
+        """
     try:
-        with open(file_path, 'r') as handle:
-            return json.load(handle)
-    except FileNotFoundError:
-        print(f"Error: The file '{file_path}' was not found.")
-        return None
-    except json.JSONDecodeError:
-        print(f"Error: Failed to decode JSON from the file '{file_path}'.")
-        return None
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        response = requests.get(api_url.format(animal_name), headers=headers)
+        if response.status_code == requests.codes.ok:
+            return response.json()
+        else:
+            print(f"Error: Failed to fetch data. Status code: {response.status_code}")
+            print(f"Details: {response.text}")
+            return None
+    except requests.RequestException as e:
+        print(f"An error occurred {e}")
         return None
 
 
@@ -63,8 +66,17 @@ def write_html_to_new_file(file_path, content):
 
 
 def main():
-    # Load animal data
-    animals_data = load_data("animals_data.json")
+    #API config
+    api_url = "https://api.api-ninjas.com/v1/animals?name={}"
+    headers = {"X-Api-Key": "sGX5MTpcQPbtL6DknWFjPg==L22HMyYSGBkwcO4n"}
+
+    # Fetch animal data from the API
+    animals_data = fetch_animal_data(api_url, headers, "Fox")
+
+    # Ensure data is fetched successfully
+    if animals_data is None:
+        print("Failed to fetch animal data. Exiting.")
+        return
 
     # Generate the string for animals info
     animals_string = generate_info_string(animals_data)
