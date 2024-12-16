@@ -1,5 +1,5 @@
-import requests
 import json
+import data_fetcher
 
 
 def get_animal_from_user():
@@ -12,22 +12,6 @@ def get_animal_from_user():
             return animal_name
         print("Animal name cannot be empty. Please enter a valid name.")
 
-
-def fetch_animal_data(api_url, headers, animal_name):
-    """
-        Fetch animal data from the API.
-        """
-    try:
-        response = requests.get(api_url.format(animal_name), headers=headers)
-        if response.status_code == requests.codes.ok:
-            return response.json()
-        else:
-            print(f"Error: Failed to fetch data. Status code: {response.status_code}")
-            print(f"Details: {response.text}")
-            return None
-    except requests.RequestException as e:
-        print(f"An error occurred {e}")
-        return None
 
 
 
@@ -94,7 +78,7 @@ def main():
         animal_name = get_animal_from_user() # Prompts and gets animal name from user
 
         # Fetch animal data from the API
-        animals_data = (fetch_animal_data(api_url, headers, animal_name))[:10]
+        animals_data = (data_fetcher.fetch_animal_data(animal_name))[:10]
 
         # Ensure data is fetched successfully
         if animals_data is None:
