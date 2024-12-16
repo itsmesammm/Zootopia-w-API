@@ -2,6 +2,17 @@ import requests
 import json
 
 
+def get_animal_from_user():
+    """
+    Prompt the user to input an animal name and return it.
+    """
+    while True:
+        animal_name = input("Enter a name of an animal: ")
+        if animal_name:
+            return animal_name
+        print("Animal name cannot be empty. Please enter a valid name.")
+
+
 def fetch_animal_data(api_url, headers, animal_name):
     """
         Fetch animal data from the API.
@@ -17,6 +28,7 @@ def fetch_animal_data(api_url, headers, animal_name):
     except requests.RequestException as e:
         print(f"An error occurred {e}")
         return None
+
 
 
 def serialize_animal(animal):
@@ -66,17 +78,29 @@ def write_html_to_new_file(file_path, content):
 
 
 def main():
+    """
+    Orchestrates the process of fetching animal data,
+    generating HTML content, and saving it to a file.
+    """
+    # Prompts and gets animal name from user
+    animal_name = get_animal_from_user()
+
     #API config
     api_url = "https://api.api-ninjas.com/v1/animals?name={}"
     headers = {"X-Api-Key": "sGX5MTpcQPbtL6DknWFjPg==L22HMyYSGBkwcO4n"}
 
     # Fetch animal data from the API
-    animals_data = fetch_animal_data(api_url, headers, "Fox")
+    animals_data = fetch_animal_data(api_url, headers, animal_name)
+    animals_data = animals_data[:10]  # Limit to 10 animals
 
     # Ensure data is fetched successfully
     if animals_data is None:
-        print("Failed to fetch animal data. Exiting.")
+        print(f"Error: Failed to fetch data for '{animal_name}'. Status code: {response.status_code}")
         return
+
+    if not animals_data:
+        print(f"No data found for '{animal_name}'. Please try again.")
+        return main()  # Restart the main process
 
     # Generate the string for animals info
     animals_string = generate_info_string(animals_data)
